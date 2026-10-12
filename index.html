@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Pinboard — a calm, playful space for brainstorming with sticky notes and sketches." />
+  <title>Pinboard — brainstorm freely</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></div>
+        <span>pinboard</span>
+      </div>
+
+      <div class="sidebar-section">
+        <p class="eyebrow">Your boards</p>
+        <button class="board-item is-active" type="button" data-board-name="Morning ideas">
+          <span class="board-icon board-icon--sun" aria-hidden="true"></span>
+          <span class="board-name">Morning ideas</span>
+          <span class="board-count">12</span>
+        </button>
+        <button class="new-board" type="button" id="newBoardBtn"><span>＋</span> New board</button>
+      </div>
+
+      <div class="sidebar-note">
+        <div class="sparkle" aria-hidden="true">✦</div>
+        <strong>Let the ideas be messy.</strong>
+        <span>There’s no wrong place to start.</span>
+      </div>
+
+      <div class="sidebar-footer">
+        <button class="mini-link" type="button"><span>⌘</span> Shortcuts</button>
+        <button class="avatar" type="button" id="accountButton" aria-label="Open account">JM</button>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <div class="breadcrumb"><span>Boards</span><span class="slash">/</span><strong>Morning ideas</strong></div>
+        <div class="top-actions">
+          <span class="saved-status"><span class="saved-dot"></span><span id="saveStatus">Saved just now</span></span>
+          <button class="icon-button" type="button" id="boardSearchButton" aria-label="Search this board" title="Search this board">⌕</button>
+          <div class="board-settings-wrap">
+            <button class="icon-button board-settings-button" type="button" id="boardSettingsButton" aria-label="Board settings" title="Board settings" aria-expanded="false">•••</button>
+            <div class="board-settings-menu" id="boardSettingsMenu" hidden>
+              <button type="button" data-board-setting="rename">✎ <span>Rename board</span></button>
+              <button type="button" data-board-setting="view">⌗ <span>Reset view</span></button>
+              <button class="is-danger" type="button" data-board-setting="clear">× <span>Reset all ideas</span></button>
+              <button class="is-danger" type="button" data-board-setting="delete">⌫ <span>Delete board</span></button>
+            </div>
+          </div>
+          <button class="share-button" type="button" id="shareBtn"><span>↗</span> Invite people</button>
+          <button class="chat-button" type="button" id="chatButton" aria-label="Open board chat"><span>☁</span> Chat</button>
+        </div>
+      </header>
+
+      <section class="board-header">
+        <div>
+          <div class="board-title-row">
+            <h1>Morning ideas</h1>
+            <button class="edit-title" type="button" aria-label="Edit board name">✎</button>
+          </div>
+          <p>A 3 yd × 10 ft space for all your ideas.</p>
+        </div>
+      </section>
+
+      <section class="workspace-wrap">
+        <div class="workspace-toolbar" aria-label="Board tools">
+          <div class="tool-group">
+            <button class="tool-button is-selected" type="button" data-tool="select"><span class="tool-glyph">↖</span><span>Select</span></button>
+            <button class="tool-button" type="button" data-tool="draw"><span class="tool-glyph pen-glyph">✎</span><span>Draw</span></button>
+            <button class="tool-button" type="button" data-tool="erase"><span class="tool-glyph">⌫</span><span>Erase</span></button>
+          </div>
+          <div class="tool-divider"></div>
+          <div class="palette-group" aria-label="Drawing colors">
+            <span class="palette-label">Ink</span>
+            <button class="palette-swatch is-active" type="button" data-color="#528b6c" aria-label="Green ink" title="Green"></button>
+            <button class="palette-swatch palette-swatch--coral" type="button" data-color="#d47768" aria-label="Coral ink" title="Coral"></button>
+            <button class="palette-swatch palette-swatch--blue" type="button" data-color="#5b86b8" aria-label="Blue ink" title="Blue"></button>
+            <button class="palette-swatch palette-swatch--purple" type="button" data-color="#8e70aa" aria-label="Purple ink" title="Purple"></button>
+            <button class="palette-swatch palette-swatch--ink" type="button" data-color="#414a46" aria-label="Dark ink" title="Dark"></button>
+          </div>
+          <div class="tool-divider"></div>
+          <div class="add-content-wrap">
+            <button class="add-content-button" type="button" id="addContentButton" aria-haspopup="menu" aria-expanded="false"><span>＋</span><span class="add-content-label">Add anything</span></button>
+            <div class="add-content-menu" id="addContentMenu" role="menu" hidden>
+              <button type="button" role="menuitem" data-add-item="note"><span>▤</span> Sticky note</button>
+              <button type="button" role="menuitem" data-add-item="text"><span>Ｔ</span> Text card</button>
+              <button type="button" role="menuitem" data-add-item="clear-text"><span>▱</span> Clear text box</button>
+              <button type="button" role="menuitem" data-add-item="checklist"><span>☑</span> Checklist</button>
+              <button type="button" role="menuitem" data-add-item="shape"><span>◯</span> Shape</button>
+              <button type="button" role="menuitem" data-add-item="emoji"><span>✦</span> Idea stamp</button>
+              <button type="button" role="menuitem" data-add-item="heart"><span>♥</span> Heart</button>
+              <button type="button" role="menuitem" data-add-item="image"><span>▧</span> Image</button>
+              <button type="button" role="menuitem" data-add-item="other"><span>✎</span> Other</button>
+            </div>
+          </div>
+          <button class="add-note-button" type="button" id="addNoteBtn"><span>＋</span> Add sticky note</button>
+          <button class="add-image-button" type="button" id="addImageBtn"><span>▧</span> Add image</button>
+          <input class="image-input" id="imageInput" type="file" accept="image/*" multiple aria-label="Choose images to add" />
+          <div class="toolbar-spacer"></div>
+          <div class="zoom-control"><button type="button" id="zoomOut" aria-label="Zoom out">−</button><span id="zoomLabel">100%</span><button type="button" id="zoomIn" aria-label="Zoom in">＋</button></div>
+          <div class="history-controls" aria-label="History controls">
+            <button class="history-button" type="button" id="undoAction" aria-label="Undo" title="Undo" disabled>↶</button>
+            <button class="history-button" type="button" id="redoAction" aria-label="Redo" title="Redo" disabled>↷</button>
+          </div>
+          <button class="fit-button" type="button" id="fitBoard">Fit board</button>
+          <button class="reset-view-button" type="button" id="resetView">Reset view</button>
+          <button class="reset-button" type="button" id="resetIdeas">Reset all ideas</button>
+        </div>
+
+        <div class="workspace" id="workspace" tabindex="0" aria-label="Brainstorming board">
+          <div class="paper-shadow"></div>
+          <div class="paper" id="paper">
+            <div class="paper-grid" aria-hidden="true"></div>
+            <div class="paper-label"><span class="paper-dot"></span> 3 yd × 10 ft board</div>
+            <canvas id="drawingCanvas" aria-label="Freehand drawing layer"></canvas>
+            <div class="notes-layer" id="notesLayer"></div>
+            <div class="empty-hint" id="emptyHint">
+              <div class="empty-illustration" aria-hidden="true"><span></span><span></span><span></span></div>
+              <strong>Your thinking space</strong>
+              <span>Add a thought, image, shape, or draw a line to get started.</span>
+            </div>
+          </div>
+          <div class="cursor-tip" id="cursorTip">Drag to move · double-click to edit</div>
+        </div>
+      </section>
+
+      <footer class="main-footer">
+        <span><kbd>Space</kbd> to pan</span>
+        <span><kbd>N</kbd> new note</span>
+        <span><kbd>D</kbd> draw</span>
+        <span class="footer-right">Ideas are better together <span>♥</span></span>
+      </footer>
+    </main>
+  </div>
+
+  <div class="modal-backdrop" id="imageModal" hidden>
+    <section class="image-picker-card" role="dialog" aria-modal="true" aria-labelledby="imagePickerTitle">
+      <button class="modal-close" type="button" id="imageModalClose" aria-label="Close image picker">×</button>
+      <p class="account-kicker">Visual references</p>
+      <h2 id="imagePickerTitle">Add an image</h2>
+      <p class="image-picker-subtitle">Bring in something that helps the idea take shape.</p>
+      <div class="image-picker-actions">
+        <button class="upload-image-button" type="button" id="chooseImageButton"><span>↑</span> Upload from device</button>
+        <span>or search the web</span>
+      </div>
+      <form class="image-search-form" id="imageSearchForm">
+        <input id="imageSearchQuery" type="search" placeholder="Search for an image…" aria-label="Search for an image" required />
+        <button type="submit">Search</button>
+      </form>
+      <div class="image-search-results" id="imageSearchResults" aria-live="polite">
+        <span class="search-placeholder">Try “cozy desk”, “city map”, or “color palette”.</span>
+      </div>
+      <div class="image-url-divider"><span>or paste an image URL</span></div>
+      <form class="image-url-form" id="imageUrlForm">
+        <input id="imageUrlInput" type="url" placeholder="https://…" aria-label="Image URL" />
+        <button type="submit">Add</button>
+      </form>
+      <p class="image-picker-footnote">Search results are from Wikimedia Commons.</p>
+    </section>
+  </div>
+
+  <div class="modal-backdrop" id="boardSearchModal" hidden>
+    <section class="search-card" role="dialog" aria-modal="true" aria-labelledby="boardSearchTitle">
+      <button class="modal-close" type="button" id="boardSearchClose" aria-label="Close board search">×</button>
+      <p class="account-kicker">Search your ideas</p>
+      <h2 id="boardSearchTitle">Find something on this board.</h2>
+      <p class="search-card-subtitle">Search sticky notes, text cards, checklists, images, and custom objects.</p>
+      <form class="board-search-form" id="boardSearchForm">
+        <input id="boardSearchInput" type="search" placeholder="Search your ideas…" aria-label="Search this board" autocomplete="off" />
+        <button type="submit">Search</button>
+      </form>
+      <div class="board-search-results" id="boardSearchResults" aria-live="polite">
+        <span class="search-placeholder">Type a word to find it on your board.</span>
+      </div>
+    </section>
+  </div>
+
+  <div class="modal-backdrop" id="collabModal" hidden>
+    <section class="collab-card" role="dialog" aria-modal="true" aria-labelledby="collabTitle">
+      <button class="modal-close" type="button" id="collabModalClose" aria-label="Close invite dialog">×</button>
+      <div class="collab-mark" aria-hidden="true">↗</div>
+      <p class="account-kicker">Make it a group thought</p>
+      <h2 id="collabTitle">Invite people to collaborate.</h2>
+      <p class="collab-subtitle">Anyone with your board link can add notes, draw, and bring in images.</p>
+      <div class="invite-link-row">
+        <input id="inviteLink" type="text" readonly aria-label="Board invite link" />
+        <button type="button" id="copyInviteLink">Copy link</button>
+      </div>
+      <form class="invite-friend-form" id="inviteFriendForm">
+        <input id="friendName" type="text" placeholder="Friend’s name" aria-label="Friend’s name" required />
+        <button type="submit">Invite person</button>
+      </form>
+      <div class="collab-divider"><span>People on this board</span></div>
+      <div class="collaborator-list" id="collaboratorList"></div>
+      <p class="collab-footnote">Invites are saved on this device in this preview.</p>
+    </section>
+  </div>
+
+  <div class="modal-backdrop" id="chatModal" hidden>
+    <section class="chat-card" role="dialog" aria-modal="true" aria-labelledby="chatTitle">
+      <button class="modal-close" type="button" id="chatModalClose" aria-label="Close board chat">×</button>
+      <div class="chat-mark" aria-hidden="true">☁</div>
+      <p class="account-kicker">Brainstorm together</p>
+      <h2 id="chatTitle">Board chat</h2>
+      <p class="chat-subtitle">Talk through ideas without leaving the board.</p>
+      <div class="chat-messages" id="chatMessages" aria-live="polite"></div>
+      <form class="chat-form" id="chatForm">
+        <input id="chatName" type="text" placeholder="Your name" aria-label="Your name" maxlength="40" />
+        <div class="chat-compose-row">
+          <input id="chatMessage" type="text" placeholder="Write a message…" aria-label="Chat message" maxlength="240" required />
+          <button type="submit">Send</button>
+        </div>
+      </form>
+      <p class="chat-footnote">Messages are saved on this device in this preview.</p>
+    </section>
+  </div>
+
+  <div class="modal-backdrop" id="accountModal" hidden>
+    <section class="account-card" role="dialog" aria-modal="true" aria-labelledby="accountTitle">
+      <button class="modal-close" type="button" id="accountClose" aria-label="Close account dialog">×</button>
+      <div class="account-mark" aria-hidden="true"><span></span><span></span><span></span></div>
+      <p class="account-kicker">Welcome to pinboard</p>
+      <h2 id="accountTitle">Give your ideas a home.</h2>
+      <p class="account-subtitle">Create a free account to keep your boards close wherever you brainstorm.</p>
+      <form id="accountForm">
+        <label for="accountFirstName">First name</label>
+        <input id="accountFirstName" name="firstName" type="text" placeholder="e.g. Jamie" autocomplete="given-name" required />
+        <label for="accountLastName">Last name</label>
+        <input id="accountLastName" name="lastName" type="text" placeholder="e.g. Morgan" autocomplete="family-name" required />
+        <label for="accountPassword">Create a 6-digit password</label>
+        <input id="accountPassword" name="password" type="password" placeholder="••••••" inputmode="numeric" pattern="[0-9]{6}" minlength="6" maxlength="6" autocomplete="new-password" required />
+        <button class="create-account-button" type="submit">Create free account <span>→</span></button>
+      </form>
+      <button class="guest-button" type="button" id="guestButton">Continue as guest</button>
+      <p class="account-footnote">Your ideas stay on this device for now.</p>
+    </section>
+  </div>
+
+  <div class="modal-backdrop" id="customItemModal" hidden>
+    <section class="collab-card custom-modal-card" role="dialog" aria-modal="true" aria-labelledby="customItemTitle">
+      <button class="modal-close" type="button" id="customItemClose" aria-label="Close custom item dialog">×</button>
+      <div class="collab-mark" aria-hidden="true">✎</div>
+      <p class="account-kicker">Make it yours</p>
+      <h2 id="customItemTitle">Add anything you want.</h2>
+      <p class="collab-subtitle">Type a thought, question, reminder, or anything else you want on the board.</p>
+      <form class="custom-form" id="customItemForm">
+        <textarea id="customItemText" rows="4" placeholder="Type your idea here…" aria-label="Custom board item" required></textarea>
+        <button type="submit">Add to board <span>→</span></button>
+      </form>
+    </section>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <template id="noteTemplate">
+    <article class="sticky-note" tabindex="0">
+      <div class="note-tape" aria-hidden="true"></div>
+      <div class="note-topline"><span class="note-label">IDEA</span><button class="note-menu" type="button" aria-label="Note options">•••</button></div>
+      <div class="note-body" contenteditable="true" spellcheck="true" data-placeholder="Write an idea…"></div>
+      <div class="note-footer"><span class="note-handle" aria-hidden="true">⠿</span><span class="note-time">just now</span></div>
+    </article>
+  </template>
+
+  <script src="script.js"></script>
+</body>
+</html>
