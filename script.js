@@ -21,6 +21,7 @@
   const imageInput = document.querySelector('#imageInput');
   const addContentButton = document.querySelector('#addContentButton');
   const addContentMenu = document.querySelector('#addContentMenu');
+  const toolbarScroll = document.querySelector('.workspace-toolbar-scroll');
   const paletteButtons = [...document.querySelectorAll('.palette-swatch')];
   const imageModal = document.querySelector('#imageModal');
   const imageSearchForm = document.querySelector('#imageSearchForm');
@@ -1156,12 +1157,32 @@
     addContentButton.setAttribute('aria-expanded', 'false');
   }
 
+  function positionAddContentMenu() {
+    if (addContentMenu.hidden) return;
+    const buttonRect = addContentButton.getBoundingClientRect();
+    const menuWidth = addContentMenu.offsetWidth || 165;
+    const menuHeight = addContentMenu.offsetHeight || 300;
+    const left = Math.max(8, Math.min(buttonRect.left, window.innerWidth - menuWidth - 8));
+    let top = buttonRect.bottom + 7;
+    if (top + menuHeight > window.innerHeight - 8) top = buttonRect.top - menuHeight - 7;
+    addContentMenu.style.left = `${left}px`;
+    addContentMenu.style.top = `${Math.max(8, top)}px`;
+  }
+
   addContentButton.addEventListener('click', (event) => {
     event.stopPropagation();
     const isOpen = !addContentMenu.hidden;
-    addContentMenu.hidden = isOpen;
-    addContentButton.setAttribute('aria-expanded', String(!isOpen));
+    if (isOpen) {
+      closeAddContentMenu();
+      return;
+    }
+    addContentMenu.hidden = false;
+    addContentButton.setAttribute('aria-expanded', 'true');
+    positionAddContentMenu();
   });
+  toolbarScroll.addEventListener('scroll', positionAddContentMenu);
+  window.addEventListener('resize', positionAddContentMenu);
+  window.addEventListener('scroll', positionAddContentMenu, true);
   addContentMenu.querySelectorAll('[data-add-item]').forEach((button) => {
     button.addEventListener('click', () => {
       closeAddContentMenu();
