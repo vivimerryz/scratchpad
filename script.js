@@ -330,14 +330,8 @@
 
   function loadNotifications() {
     try {
-      const saved = localStorage.getItem(notificationsKey);
-      if (saved === null) {
-        notifications = [{ id: 'sample-invite', inviter: 'Avery Chen', board: 'Morning ideas', read: false, status: 'pending' }];
-        saveNotifications();
-        return;
-      }
-      const parsed = JSON.parse(saved);
-      notifications = Array.isArray(parsed) ? parsed : [];
+      const parsed = JSON.parse(localStorage.getItem(notificationsKey) || '[]');
+      notifications = Array.isArray(parsed) ? parsed.filter((notification) => notification.id !== 'sample-invite') : [];
     } catch {
       notifications = [];
     }
@@ -348,16 +342,18 @@
   }
 
   function renderNotifications() {
-    const unread = notifications.filter((notification) => !notification.read && notification.status === 'pending').length;
+    const viewer = (profile?.name || '').trim().toLowerCase();
+    const visibleNotifications = notifications.filter((notification) => notification.recipient && viewer && notification.recipient.toLowerCase() === viewer);
+    const unread = visibleNotifications.filter((notification) => !notification.read && notification.status === 'pending').length;
     notificationBadge.textContent = unread > 9 ? '9+' : String(unread);
     notificationBadge.hidden = unread === 0;
     notificationSummary.textContent = unread ? `${unread} new invitation${unread === 1 ? '' : 's'}` : 'No new invites';
     notificationList.replaceChildren();
-    if (!notifications.length) {
-      notificationList.innerHTML = '<div class="notification-empty">You’re all caught up.</div>';
+    if (!visibleNotifications.length) {
+      notificationList.innerHTML = '<div class="notification-empty">No invitations from real people yet.</div>';
       return;
     }
-    notifications.slice().reverse().forEach((notification) => {
+    visibleNotifications.slice().reverse().forEach((notification) => {
       const row = document.createElement('article');
       row.className = `notification-row${!notification.read && notification.status === 'pending' ? ' is-unread' : ''}`;
       const inviter = notification.inviter || 'Someone';
@@ -1467,13 +1463,18 @@
     profile = { name, firstName, lastName };
     try { localStorage.setItem('pinboard-profile', JSON.stringify(profile)); } catch { /* local storage may be unavailable */ }
     updateProfileUI(name);
+    loadNotifications();
+    renderNotifications();
     closeAccountModal();
     showToast(`Welcome, ${name.split(/\s+/)[0]}. Your account is ready.`);
   });
   document.querySelector('#shareBtn').addEventListener('click', openCollabModal);
   notificationButton.addEventListener('click', toggleNotifications);
   document.querySelector('#markNotificationsRead').addEventListener('click', () => {
-    notifications.forEach((notification) => { notification.read = true; });
+    const viewer = (profile?.name || '').trim().toLowerCase();
+    notifications.forEach((notification) => {
+      if (notification.recipient && viewer && notification.recipient.toLowerCase() === viewer) notification.read = true;
+    });
     saveNotifications();
     renderNotifications();
     showToast('Notifications marked as read.');
@@ -1527,7 +1528,16 @@
       return;
     }
     collaborators.push(name);
+    notifications.push({
+      id: `invite-${Date.now()}`,
+      inviter: profile?.name || 'You',
+      recipient: name,
+      board: boardTitle.textContent.trim() || 'Morning ideas',
+      read: false,
+      status: 'pending'
+    });
     saveCollaborators();
+    saveNotifications();
     renderCollaborators();
     friendName.value = '';
     showToast(`Invite ready for ${name}.`);
