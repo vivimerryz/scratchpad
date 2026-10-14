@@ -42,6 +42,16 @@
         <div class="breadcrumb"><span>Boards</span><span class="slash">/</span><strong>Morning ideas</strong></div>
         <div class="top-actions">
           <span class="saved-status"><span class="saved-dot"></span><span id="saveStatus">Saved just now</span></span>
+          <div class="notifications-wrap">
+            <button class="notification-button" type="button" id="notificationButton" aria-label="Open notifications" aria-expanded="false" title="Notifications">🔔<span class="notification-badge" id="notificationBadge" hidden>0</span></button>
+            <div class="notifications-panel" id="notificationsPanel" hidden>
+              <div class="notifications-header">
+                <div><strong>Notifications</strong><span id="notificationSummary">No new invites</span></div>
+                <button type="button" id="markNotificationsRead">Mark all read</button>
+              </div>
+              <div class="notification-list" id="notificationList" aria-live="polite"></div>
+            </div>
+          </div>
           <button class="icon-button" type="button" id="boardSearchButton" aria-label="Search this board" title="Search this board">⌕</button>
           <div class="board-settings-wrap">
             <button class="icon-button board-settings-button" type="button" id="boardSettingsButton" aria-label="Board settings" title="Board settings" aria-expanded="false">•••</button>

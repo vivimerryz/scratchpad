@@ -47,6 +47,11 @@
   const customItemModal = document.querySelector('#customItemModal');
   const customItemForm = document.querySelector('#customItemForm');
   const customItemText = document.querySelector('#customItemText');
+  const notificationButton = document.querySelector('#notificationButton');
+  const notificationsPanel = document.querySelector('#notificationsPanel');
+  const notificationBadge = document.querySelector('#notificationBadge');
+  const notificationSummary = document.querySelector('#notificationSummary');
+  const notificationList = document.querySelector('#notificationList');
   const undoButton = document.querySelector('#undoAction');
   const redoButton = document.querySelector('#redoAction');
   const ctx = canvas.getContext('2d');
@@ -63,6 +68,7 @@
   let collaborators = [];
   let imageSearchTimer;
   let chatEntries = [];
+  let notifications = [];
   let boardSaveTimer;
   let historyTimer;
   let undoStack = [];
@@ -76,6 +82,7 @@
   const chatStateKey = 'pinboard-chat-v1';
   const drawingStateKey = 'pinboard-drawing-state-v1';
   const boardDrawingsKey = 'pinboard-board-drawings-v1';
+  const notificationsKey = 'pinboard-notifications-v1';
   const wiredResizeHandles = new WeakSet();
 
   const corrections = {
@@ -321,12 +328,79 @@
     chatModal.hidden = true;
   }
 
+  function loadNotifications() {
+    try {
+      const saved = localStorage.getItem(notificationsKey);
+      if (saved === null) {
+        notifications = [{ id: 'sample-invite', inviter: 'Avery Chen', board: 'Morning ideas', read: false, status: 'pending' }];
+        saveNotifications();
+        return;
+      }
+      const parsed = JSON.parse(saved);
+      notifications = Array.isArray(parsed) ? parsed : [];
+    } catch {
+      notifications = [];
+    }
+  }
+
+  function saveNotifications() {
+    try { localStorage.setItem(notificationsKey, JSON.stringify(notifications)); } catch { /* local storage may be unavailable */ }
+  }
+
+  function renderNotifications() {
+    const unread = notifications.filter((notification) => !notification.read && notification.status === 'pending').length;
+    notificationBadge.textContent = unread > 9 ? '9+' : String(unread);
+    notificationBadge.hidden = unread === 0;
+    notificationSummary.textContent = unread ? `${unread} new invitation${unread === 1 ? '' : 's'}` : 'No new invites';
+    notificationList.replaceChildren();
+    if (!notifications.length) {
+      notificationList.innerHTML = '<div class="notification-empty">You’re all caught up.</div>';
+      return;
+    }
+    notifications.slice().reverse().forEach((notification) => {
+      const row = document.createElement('article');
+      row.className = `notification-row${!notification.read && notification.status === 'pending' ? ' is-unread' : ''}`;
+      const inviter = notification.inviter || 'Someone';
+      row.innerHTML = '<span class="notification-avatar"></span><div class="notification-content"><div class="notification-message"><strong></strong> invited you to collaborate.</div><div class="notification-board"></div><div class="notification-actions"><button class="notification-accept" type="button">Accept</button><button class="notification-decline" type="button">Decline</button></div><span class="notification-status"></span></div>';
+      row.querySelector('.notification-avatar').textContent = getInitials(inviter);
+      row.querySelector('.notification-message strong').textContent = inviter;
+      row.querySelector('.notification-board').textContent = `Board · ${notification.board || 'Shared ideas'}`;
+      const actions = row.querySelector('.notification-actions');
+      const status = row.querySelector('.notification-status');
+      if (notification.status !== 'pending') {
+        actions.hidden = true;
+        status.textContent = notification.status === 'accepted' ? 'Joined' : 'Declined';
+      }
+      row.querySelector('.notification-accept').addEventListener('click', () => respondToNotification(notification.id, 'accepted'));
+      row.querySelector('.notification-decline').addEventListener('click', () => respondToNotification(notification.id, 'declined'));
+      notificationList.appendChild(row);
+    });
+  }
+
+  function respondToNotification(id, status) {
+    const notification = notifications.find((item) => item.id === id);
+    if (!notification) return;
+    notification.status = status;
+    notification.read = true;
+    saveNotifications();
+    renderNotifications();
+    showToast(status === 'accepted' ? `You joined ${notification.board || 'the board'}.` : 'Invite declined.');
+  }
+
+  function toggleNotifications() {
+    const willOpen = notificationsPanel.hidden;
+    notificationsPanel.hidden = !willOpen;
+    notificationButton.setAttribute('aria-expanded', String(willOpen));
+    if (willOpen) renderNotifications();
+  }
+
   function updateEmptyState() {
     emptyHint.hidden = notesLayer.children.length > 0;
   }
 
   function updateSavedStatus() {
     saveStatus.textContent = 'Saving…';
+    saveBoardState();
     scheduleBoardSave();
     scheduleHistorySnapshot();
     setTimeout(() => { saveStatus.textContent = 'Saved just now'; }, 600);
@@ -1397,6 +1471,19 @@
     showToast(`Welcome, ${name.split(/\s+/)[0]}. Your account is ready.`);
   });
   document.querySelector('#shareBtn').addEventListener('click', openCollabModal);
+  notificationButton.addEventListener('click', toggleNotifications);
+  document.querySelector('#markNotificationsRead').addEventListener('click', () => {
+    notifications.forEach((notification) => { notification.read = true; });
+    saveNotifications();
+    renderNotifications();
+    showToast('Notifications marked as read.');
+  });
+  document.addEventListener('click', (event) => {
+    if (!event.target.closest('.notifications-wrap')) {
+      notificationsPanel.hidden = true;
+      notificationButton.setAttribute('aria-expanded', 'false');
+    }
+  });
   document.querySelector('#collabModalClose').addEventListener('click', closeCollabModal);
   collabModal.addEventListener('click', (event) => {
     if (event.target === collabModal) closeCollabModal();
@@ -1502,8 +1589,14 @@
   restoreDrawingState(initializeHistory);
   window.addEventListener('resize', setCanvasSize);
   window.addEventListener('beforeunload', saveBoardState);
+  window.addEventListener('pagehide', () => saveBoardState());
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') saveBoardState();
+  });
   loadProfile();
   loadCollaborators();
+  loadNotifications();
+  renderNotifications();
   loadChatMessages();
   try {
     if (!localStorage.getItem('pinboard-profile') && !localStorage.getItem('pinboard-guest')) openAccountModal();
